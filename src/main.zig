@@ -70,62 +70,42 @@ pub const CompressResult = struct {
 pub fn compress(allocator: std.mem.Allocator, input: []const u8, config: CompressConfig) !CompressResult {
     if (input.len == 0) return CompressionError.EmptyInput;
 
-    var arena = std.heap.ArenaAllocator.init(allocator);
-    defer arena.deinit();
-    const a = arena.allocator();
-
     const content_router = @import("content_router.zig");
     var router = content_router.ContentRouter.init(config);
-    return router.compress(a, input, config);
+    return router.compress(allocator, input, config);
 }
 
 /// Convenience: compress JSON arrays specifically.
 pub fn compressJson(allocator: std.mem.Allocator, json_text: []const u8, config: CompressConfig) !CompressResult {
     if (json_text.len == 0) return CompressionError.EmptyInput;
 
-    var arena = std.heap.ArenaAllocator.init(allocator);
-    defer arena.deinit();
-    const a = arena.allocator();
-
     const sc = @import("smart_crusher/main.zig");
     var crusher = sc.SmartCrusher.init(.{});
-    return crusher.crushArray(a, json_text, config);
+    return crusher.crushArray(allocator, json_text, config);
 }
 
 /// Convenience: compress log output specifically.
 pub fn compressLogs(allocator: std.mem.Allocator, log_text: []const u8, config: CompressConfig) !CompressResult {
     if (log_text.len == 0) return CompressionError.EmptyInput;
 
-    var arena = std.heap.ArenaAllocator.init(allocator);
-    defer arena.deinit();
-    const a = arena.allocator();
-
     const lc = @import("log_compressor.zig");
-    return lc.compress(a, log_text, config);
+    return lc.compress(allocator, log_text, config);
 }
 
 /// Convenience: compress search results specifically.
 pub fn compressSearch(allocator: std.mem.Allocator, search_text: []const u8, config: CompressConfig) !CompressResult {
     if (search_text.len == 0) return CompressionError.EmptyInput;
 
-    var arena = std.heap.ArenaAllocator.init(allocator);
-    defer arena.deinit();
-    const a = arena.allocator();
-
     const sc = @import("search_compressor.zig");
-    return sc.compress(a, search_text, config);
+    return sc.compress(allocator, search_text, config);
 }
 
 /// Convenience: compress diffs specifically.
 pub fn compressDiff(allocator: std.mem.Allocator, diff_text: []const u8, config: CompressConfig) !CompressResult {
     if (diff_text.len == 0) return CompressionError.EmptyInput;
 
-    var arena = std.heap.ArenaAllocator.init(allocator);
-    defer arena.deinit();
-    const a = arena.allocator();
-
     const dc = @import("diff_compressor.zig");
-    return dc.compress(a, diff_text, config);
+    return dc.compress(allocator, diff_text, config);
 }
 
 /// Retrieve original content from the CCR store.

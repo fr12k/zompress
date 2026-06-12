@@ -108,6 +108,7 @@ pub fn compress(allocator: std.mem.Allocator, log_text: []const u8, _: CompressC
 
     // Build output
     var out: std.ArrayList(u8) = .empty;
+    defer out.deinit(allocator);
     for (kept.items) |idx| {
         if (out.items.len > 0) try out.append(allocator, '\n');
         try out.appendSlice(allocator, lines[idx].content);

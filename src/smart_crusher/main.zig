@@ -112,6 +112,7 @@ pub const SmartCrusher = struct {
 
         // Build output
         var out: std.ArrayList(u8) = .empty;
+        defer out.deinit(allocator);
         try out.append(allocator, '[');
         for (deduped.items, 0..) |idx, i| {
             if (i > 0) try out.append(allocator, ',');
@@ -169,6 +170,7 @@ pub const SmartCrusher = struct {
         std.mem.sort(usize, kept.items, {}, comptime std.sort.asc(usize));
 
         var out: std.ArrayList(u8) = .empty;
+        defer out.deinit(allocator);
         try out.append(allocator, '[');
         var prev: ?usize = null;
         for (kept.items) |idx| {

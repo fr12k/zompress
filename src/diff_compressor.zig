@@ -8,6 +8,7 @@ pub fn compress(allocator: std.mem.Allocator, diff_text: []const u8, _: Compress
     if (!isDiff(diff_text)) return CompressResult.passthrough(allocator, diff_text);
 
     var out: std.ArrayList(u8) = .empty;
+    defer out.deinit(allocator);
 
     var line_iter = std.mem.splitScalar(u8, diff_text, '\n');
     var lines: std.ArrayList([]const u8) = .empty;
@@ -100,7 +101,7 @@ pub fn compress(allocator: std.mem.Allocator, diff_text: []const u8, _: Compress
         .compressed = compressed,
         .tokens_before = diff_text.len / 4,
         .tokens_after = compressed.len / 4,
-        .tokens_saved = (diff_text.len - compressed.len) / 4,
+        .tokens_saved = (diff_text.len -| compressed.len) / 4,
         .compression_ratio = @as(f64, @floatFromInt(compressed.len)) / @as(f64, @floatFromInt(diff_text.len)),
         .transforms_applied = try allocator.dupe([]const u8, &[_][]const u8{"diff_compressor"}),
         .ccr_keys = try allocator.dupe([]const u8, &[_][]const u8{}),

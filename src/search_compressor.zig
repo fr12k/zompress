@@ -89,7 +89,9 @@ pub fn compress(allocator: std.mem.Allocator, search_text: []const u8, _: Compre
 
         try out.appendSlice(allocator, arr.items[0].file);
         try out.append(allocator, ':');
-        try out.appendSlice(allocator, try std.fmt.allocPrint(allocator, "{d}", .{arr.items[0].line_number}));
+        const line_str = try std.fmt.allocPrint(allocator, "{d}", .{arr.items[0].line_number});
+        defer allocator.free(line_str);
+        try out.appendSlice(allocator, line_str);
         try out.append(allocator, ':');
         try out.appendSlice(allocator, arr.items[0].content);
 
