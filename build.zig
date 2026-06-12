@@ -10,6 +10,14 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    // Export the module under the name "zompress" so that dependents
+    // can call `zompress_dep.module("zompress")` to import it.
+    _ = b.addModule("zompress", .{
+        .root_source_file = b.path("src/root.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+
     const lib = b.addLibrary(.{
         .name = "zompress",
         .root_module = lib_mod,
