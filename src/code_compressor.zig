@@ -216,7 +216,7 @@ test "compile and parse zig source with arena" {
     var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
     defer arena.deinit();
     const a = arena.allocator();
-    const source = try a.dupeZ(u8, "const std = @import(\"std\");\n\npub fn main() !void {\n    const x: i32 = 42;\n}\n");
+    const source = try std.fmt.allocPrint(a, "{s}\x00", .{"const std = @import(\"std\");\n\npub fn main() !void {\n    const x: i32 = 42;\n}"});
     var tree = try Ast.parse(a, source, .zig);
     defer tree.deinit(a);
     try std.testing.expectEqual(@as(usize, 0), tree.errors.len);
