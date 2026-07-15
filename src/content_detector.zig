@@ -146,11 +146,11 @@ fn looksLikeJsonObject(content: []const u8) bool {
 fn looksLikeHtml(content: []const u8) bool {
     const trimmed = std.mem.trim(u8, content, " \t\n\r");
     // Check for <html>, <!DOCTYPE html>, or common HTML tags
-    if (std.ascii.indexOfIgnoreCase(trimmed, "<html") != null) return true;
-    if (std.ascii.indexOfIgnoreCase(trimmed, "<!doctype html") != null) return true;
-    if (std.ascii.indexOfIgnoreCase(trimmed, "<div") != null) return true;
-    if (std.ascii.indexOfIgnoreCase(trimmed, "<body") != null) return true;
-    if (std.ascii.indexOfIgnoreCase(trimmed, "<head") != null) return true;
+    if (std.ascii.findIgnoreCase(trimmed, "<html") != null) return true;
+    if (std.ascii.findIgnoreCase(trimmed, "<!doctype html") != null) return true;
+    if (std.ascii.findIgnoreCase(trimmed, "<div") != null) return true;
+    if (std.ascii.findIgnoreCase(trimmed, "<body") != null) return true;
+    if (std.ascii.findIgnoreCase(trimmed, "<head") != null) return true;
     return false;
 }
 
@@ -232,10 +232,10 @@ fn parseGrepLine(line: []const u8) ?struct { path: []const u8, line_num: usize }
 fn looksLikeBuildOutput(lines: []const []const u8) bool {
     var error_count: usize = 0;
     for (lines) |line| {
-        if (std.ascii.indexOfIgnoreCase(line, "error") != null) error_count += 1;
-        if (std.ascii.indexOfIgnoreCase(line, "traceback") != null) error_count += 3;
-        if (std.ascii.indexOfIgnoreCase(line, "failed") != null) error_count += 1;
-        if (std.ascii.indexOfIgnoreCase(line, "warning:") != null) error_count += 1;
+        if (std.ascii.findIgnoreCase(line, "error") != null) error_count += 1;
+        if (std.ascii.findIgnoreCase(line, "traceback") != null) error_count += 3;
+        if (std.ascii.findIgnoreCase(line, "failed") != null) error_count += 1;
+        if (std.ascii.findIgnoreCase(line, "warning:") != null) error_count += 1;
         if (std.mem.indexOf(u8, line, "======") != null) error_count += 1; // pytest separators
     }
     return error_count >= 3;

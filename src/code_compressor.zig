@@ -17,7 +17,8 @@ pub fn compress(allocator: std.mem.Allocator, source: []const u8, config: Compre
     defer arena.deinit();
     const a = arena.allocator();
 
-    const source_z = try a.dupeZ(u8, source);
+    const source_z = try a.allocSentinel(u8, source.len, 0);
+    @memcpy(source_z[0..source.len], source);
     var tree = try Ast.parse(a, source_z, .zig);
     defer tree.deinit(a);
 
