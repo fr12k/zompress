@@ -226,8 +226,7 @@ test "compress function body removes lines" {
     var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
     defer arena.deinit();
     const a = arena.allocator();
-    const source = try a.dupeZ(u8,
-        \\pub fn process() !void {
+    const source = try std.fmt.allocPrint(a, "{s}\x00", .{\\pub fn process() !void {
         \\    var x: i32 = 0;
         \\    x += 1;
         \\    x += 2;
@@ -236,7 +235,7 @@ test "compress function body removes lines" {
         \\    x += 5;
         \\    return x;
         \\}
-    );
+    });
     const config = CompressConfig{};
     const result = try compress(std.testing.allocator, source, config);
     defer std.testing.allocator.free(result.compressed);
@@ -250,12 +249,11 @@ test "compress struct declaration preserved fully" {
     var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
     defer arena.deinit();
     const a = arena.allocator();
-    const source = try a.dupeZ(u8,
-        \\pub const Config = struct {
+    const source = try std.fmt.allocPrint(a, "{s}\x00", .{\\pub const Config = struct {
         \\    timeout: u64 = 1000,
         \\    retries: u8 = 3,
         \\};
-    );
+    });
     const config = CompressConfig{};
     const result = try compress(std.testing.allocator, source, config);
     defer std.testing.allocator.free(result.compressed);
@@ -268,7 +266,7 @@ test "compress invalid zig passthrough" {
     var arena = std.heap.ArenaAllocator.init(std.testing.allocator);
     defer arena.deinit();
     const a = arena.allocator();
-    const source = try a.dupeZ(u8, "not valid zig @@@\n");
+    const source = try std.fmt.allocPrint(a, "{s}\x00", .{"not valid zig @@@\n"});
     const config = CompressConfig{};
     const result = try compress(std.testing.allocator, source, config);
     defer std.testing.allocator.free(result.compressed);
