@@ -19,7 +19,7 @@ pub fn compress(allocator: std.mem.Allocator, source: []const u8, config: Compre
 
     const source_z = try a.allocSentinel(u8, source.len, 0);
     @memcpy(source_z[0..source.len], source);
-    var tree = try Ast.parse(a, source_z, .zig);
+    var tree = try Ast.parse(a, source_z, if (@hasDecl(Ast, "ParseOptions")) .{ .mode = .zig } else .zig);
     defer tree.deinit(a);
 
     if (tree.errors.len > 0) {
@@ -218,7 +218,7 @@ test "compile and parse zig source with arena" {
     const a = arena.allocator();
     const source = try a.allocSentinel(u8, "const std = @import(\"std\");\n\npub fn main() !void {\n    const x: i32 = 42;\n}".len, 0);
     @memcpy(source[0.."const std = @import(\"std\");\n\npub fn main() !void {\n    const x: i32 = 42;\n}".len], "const std = @import(\"std\");\n\npub fn main() !void {\n    const x: i32 = 42;\n}");
-    var tree = try Ast.parse(a, source, .zig);
+    var tree = try Ast.parse(a, source, if (@hasDecl(Ast, "ParseOptions")) .{ .mode = .zig } else .zig);
     defer tree.deinit(a);
     try std.testing.expectEqual(@as(usize, 0), tree.errors.len);
 }
