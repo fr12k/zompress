@@ -101,13 +101,17 @@ pub fn compress(allocator: std.mem.Allocator, search_text: []const u8, _: Compre
                 try out.append(allocator, '\n');
                 try out.appendSlice(allocator, arr.items[last_idx].file);
                 try out.append(allocator, ':');
-                try out.appendSlice(allocator, try std.fmt.allocPrint(allocator, "{d}", .{arr.items[last_idx].line_number}));
+                const last_line_str = try std.fmt.allocPrint(allocator, "{d}", .{arr.items[last_idx].line_number});
+                defer allocator.free(last_line_str);
+                try out.appendSlice(allocator, last_line_str);
                 try out.append(allocator, ':');
                 try out.appendSlice(allocator, arr.items[last_idx].content);
             }
         }
         if (arr.items.len > max_per_file) {
-            try out.appendSlice(allocator, try std.fmt.allocPrint(allocator, "\n[... and {d} more matches in file]", .{arr.items.len - max_per_file}));
+            const omitted = try std.fmt.allocPrint(allocator, "\n[... and {d} more matches in file]", .{arr.items.len - max_per_file});
+            defer allocator.free(omitted);
+            try out.appendSlice(allocator, omitted);
         }
         files_kept += 1;
     }
